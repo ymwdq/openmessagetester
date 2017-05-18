@@ -5,6 +5,6 @@ package io.openmessaging.demo;
  */
 public class Config {
     public static final int CACHE_NUM = 1;
-    public static final int MAX_CACHE_SIZE = 256 * 1024 * 1024;
+    public static final int MAX_CACHE_SIZE = 50 * 1024 * 1024;
     public static final int MESSAGE_CACHE_TABLE_INIT_SIZE = 256;
 }

@@ -67,7 +67,7 @@ public class YmProducerTest1 {
                         queueOrTopic = "TOPIC_" + random.nextInt(10);
                     }
 //                    Message message = producer.createBytesMessageToQueue(queueOrTopic, (label + "_" + offsets.get(queueOrTopic)).getBytes());
-                    Message message = producer.createBytesMessageToQueue(queueOrTopic, new byte[100 * 1024]);
+                    Message message = producer.createBytesMessageToQueue(queueOrTopic, new byte[30]);
                     logger.debug("queueOrTopic:{} offset:{}", queueOrTopic, label + "_" + offsets.get(queueOrTopic));
                     offsets.put(queueOrTopic, offsets.get(queueOrTopic) + 1);
                     producer.send(message);

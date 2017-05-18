@@ -41,7 +41,7 @@ public class YmMessageStore {
         try {
             raf = new RandomAccessFile(file, "rw");
             fileChannel = raf.getChannel();
-            mbb = fileChannel.map(FileChannel.MapMode.READ_WRITE, 0, MAX_BUFFER_SIZE + StoreConfig.CACHE_SIZE);
+            mbb = fileChannel.map(FileChannel.MapMode.READ_WRITE, 0, MAX_BUFFER_SIZE);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -49,30 +49,46 @@ public class YmMessageStore {
         }
 
     }
-    public void alignDataChunk() {
-        System.out.println("align data chunk");
-        mbb.put(new byte[DATA_CHUNK_SIZE - chunkPos]);
-        currentPos += (DATA_CHUNK_SIZE - chunkPos);
-        chunkPos = 0;
-    }
+
+//    public void alignDataChunk() {
+//        System.out.println("align data chunk");
+//        mbb.put(new byte[DATA_CHUNK_SIZE - chunkPos]);
+//        currentPos += (DATA_CHUNK_SIZE - chunkPos);
+//        chunkPos = 0;
+//    }
+
+//    public synchronized void writeMessage  (List<byte[]> bytes, List<Integer> lengthList, int totalLength) throws IOException {
+//        if ((totalLength + currentPos) >= MAX_BUFFER_SIZE) {
+//            System.out.println("write buffer full" + counter);
+//            fileChannel.close();
+//            counter += 1;
+//            init();
+//        }
+//        Iterator iter = lengthList.iterator();
+//        for (byte[] each : bytes) {
+//            int messageSize = (int)iter.next();
+//            if ((messageSize + chunkPos) >= (DATA_CHUNK_SIZE)) {
+//                alignDataChunk();
+//            }
+//            mbb.put(each, 0, messageSize);
+//            currentPos += messageSize;
+//            chunkPos += messageSize;
+//        }
+//    }
 
     public synchronized void writeMessage  (List<byte[]> bytes, List<Integer> lengthList, int totalLength) throws IOException {
         if ((totalLength + currentPos) >= MAX_BUFFER_SIZE) {
             System.out.println("write buffer full" + counter);
-            counter += 1;
             fileChannel.close();
+            counter += 1;
             init();
         }
         Iterator iter = lengthList.iterator();
         for (byte[] each : bytes) {
             int messageSize = (int)iter.next();
-            if ((messageSize + chunkPos) >= (DATA_CHUNK_SIZE)) {
-                alignDataChunk();
-            }
             mbb.put(each, 0, messageSize);
-            currentPos += messageSize;
-            chunkPos += messageSize;
         }
+        currentPos += totalLength;
     }
 
 }

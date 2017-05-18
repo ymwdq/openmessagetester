@@ -27,10 +27,13 @@ public class YmMetaDataChunkParser {
             DefaultBytesMessage msg = new DefaultBytesMessage(null);
             readMessageHead();
             readBody(msg);
+            System.out.println("msg length" + msg_length);
             while (current_offset < msg_length) {
                 readKeyValue(msg);
             }
             System.out.println(msg);
+            System.out.println("msg over current offset" + current_offset);
+
         }
 
     }
@@ -39,7 +42,7 @@ public class YmMetaDataChunkParser {
         int signature = readSignature();
         if (signature == SerialConfig.SIGNATURE_MESSAGE) {
             msg_length = readLength();
-        } else throw new Exception("bad message first signature");
+        } else throw new Exception("bad message first signature, offset" + current_offset);
     }
 
     private void readBody(DefaultBytesMessage msg) throws Exception {

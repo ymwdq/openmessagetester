@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.LinkedList;
 
 /**
  * Created by YangMing on 2017/5/17.
@@ -29,9 +28,6 @@ public class YmMessageReader {
     public void init() {
         currentPos = 0;
         file = new File(StoreConfig.STORE_PATH + StoreConfig.FILE_NAME + counter);
-        if (file.exists()) {
-            file.delete();
-        }
         try {
             raf = new RandomAccessFile(file, "rw");
             fileChannel = raf.getChannel();
@@ -75,9 +71,7 @@ public class YmMessageReader {
 
     public byte[] readDataChunk() {
         byte[] dataChunk = new byte[DATA_CHUNK_SIZE];
-        for (int i = 0; i < dataChunk.length; i++) {
-            dataChunk[i] = mbb.get();
-        }
+        mbb.get(dataChunk);
         currentPos += dataChunk.length;
         return dataChunk;
     }
