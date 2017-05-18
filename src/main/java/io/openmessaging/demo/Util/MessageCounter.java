@@ -15,7 +15,7 @@ public class MessageCounter {
     }
 
     public synchronized void countMessage(int bytesNum) {
-        totalBytes += bytesNum / (1024 * 1024);
-        System.out.println("current bytes " + totalBytes + " MB");
+        totalBytes += bytesNum ;
+        System.out.println("current bytes " + totalBytes / (1024 * 1024) + " MB");
     }
 }

@@ -31,6 +31,7 @@ public class YmMetaDataChunkParser {
             while (current_offset < msg_length) {
                 readKeyValue(msg);
             }
+
             System.out.println(msg);
             System.out.println("msg over current offset" + current_offset);
 
