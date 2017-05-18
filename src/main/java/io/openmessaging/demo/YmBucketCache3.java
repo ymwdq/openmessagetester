@@ -35,11 +35,11 @@ public class YmBucketCache3 {
         realMessageSize += message.getTotalLength();
         if (isFull()) {
             // call the write module
-            System.out.println("bucket full");
             try {
                 yms.writeMessage(getCachedBucket(), getLengthList(), realMessageSize);
                 MessageCounter.getInstance().countMessage(realMessageSize);
                 releaseBucket();
+                System.out.println("bucket full");
 
             } catch (IOException e) {
                 e.printStackTrace();
