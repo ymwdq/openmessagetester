@@ -79,7 +79,7 @@ public class YmMessageStore {
     public synchronized void writeMessage  (List<byte[]> bytes, List<Integer> lengthList, int totalLength) throws IOException {
 
         if ((totalLength + currentPos) >= MAX_BUFFER_SIZE) {
-            wi
+            writeEndBytes();
             System.out.println("write buffer full" + counter);
             fileChannel.close();
             counter += 1;

@@ -19,7 +19,6 @@ public class YmMetaDataChunkParser {
     }
 
     public void setMetaData(byte[] metaData, int offset) {
-
         this.metaData = metaData;
 
         current_offset = offset;
@@ -29,25 +28,30 @@ public class YmMetaDataChunkParser {
         System.out.println(current_offset);
         while (current_offset < metaData.length) {
             DefaultBytesMessage msg = new DefaultBytesMessage(null);
-            readMessageHead();
-            readBody(msg);
-            while ((current_offset - previous_offset) < msg_length ) {
-                readKeyValue(msg);
+            if(readMessageHead()) {
+
+                readBody(msg);
+                while ((current_offset - previous_offset) < msg_length) {
+                    readKeyValue(msg);
+                }
+                previous_offset = current_offset;
+                System.out.println(msg);
             }
-            previous_offset = current_offset;
-            System.out.println(msg);
-
-            System.out.println("msg over current offset" + current_offset);
-
+            else return;
         }
 
     }
 
-    private void readMessageHead() throws Exception {
+    private boolean readMessageHead() throws Exception {
         int signature = readSignature();
         if (signature == SerialConfig.SIGNATURE_MESSAGE) {
             msg_length = readLength();
-        } else throw new Exception("bad message first signature, offset" + current_offset);
+            return true;
+        }
+        else if (signature == SerialConfig.SIGNATURE_END) {
+            return false;
+        }
+        else throw new Exception("bad message first signature, offset" + current_offset);
     }
 
     private void readBody(DefaultBytesMessage msg) throws Exception {

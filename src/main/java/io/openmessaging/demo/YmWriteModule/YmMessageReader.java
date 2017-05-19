@@ -53,8 +53,6 @@ public class YmMessageReader {
     public void readData() {
         YmMetaDataChunkParser parser = new YmMetaDataChunkParser();
 
-
-
         while (currentPos < MAX_BUFFER_SIZE + DATA_CHUNK_SIZE) {
             // call the consumer thread
             System.out.println("read data chunk");
