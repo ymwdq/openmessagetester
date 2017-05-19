@@ -19,6 +19,7 @@ public class SerialConfig {
     0x09 表long类型
     0x0a 表示double类型
     0x0b 表string类型
+    0xff 表示結束
      */
     public static final int SIGNATURE_MESSAGE = 0;
     public static final int SIGNATURE_HEADER = 2;
@@ -28,6 +29,7 @@ public class SerialConfig {
     public static final int SIGNATURE_LONG = 9;
     public static final int SIGNATURE_DOUBLE = 10;
     public static final int SIGNATURE_BODY = 4;
+    public static final int SIGNATURE_END = 255;
 
     public static final int BLOCK_LENGTH_NUM = 4;
 

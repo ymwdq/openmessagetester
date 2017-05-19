@@ -19,7 +19,9 @@ public class YmMetaDataChunkParser {
     }
 
     public void setMetaData(byte[] metaData, int offset) {
+
         this.metaData = metaData;
+
         current_offset = offset;
     }
 
@@ -29,12 +31,12 @@ public class YmMetaDataChunkParser {
             DefaultBytesMessage msg = new DefaultBytesMessage(null);
             readMessageHead();
             readBody(msg);
-            System.out.println("msg length" + msg_length);
             while ((current_offset - previous_offset) < msg_length ) {
                 readKeyValue(msg);
             }
             previous_offset = current_offset;
             System.out.println(msg);
+
             System.out.println("msg over current offset" + current_offset);
 
         }
