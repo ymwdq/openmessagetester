@@ -12,4 +12,5 @@ public class StoreConfig {
     public static final int CACHE_SIZE = Config.MAX_CACHE_SIZE;
     public static final String STORE_PATH = "d://";
     public static final String FILE_NAME = "testWrite";
+    public static final int FILE_END_SIGNATURE = 255;
 }

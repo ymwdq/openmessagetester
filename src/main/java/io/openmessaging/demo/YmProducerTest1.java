@@ -40,7 +40,7 @@ public class YmProducerTest1 {
                 Class kvClass = Class.forName("io.openmessaging.demo.DefaultKeyValue");
                 KeyValue keyValue = (KeyValue) kvClass.newInstance();
                 keyValue.put("STORE_PATH", Constants.STORE_PATH);
-                Class producerClass = Class.forName("io.openmessaging.demo.YmProducer3");
+                Class producerClass = Class.forName("io.openmessaging.demo.YmProducer4");
                 producer = (Producer) producerClass.getConstructor(new Class[]{KeyValue.class}).newInstance(new Object[]{keyValue});
                 if (producer == null) {
                     throw new InstantiationException("Init Producer Failed");
@@ -66,8 +66,8 @@ public class YmProducerTest1 {
                     } else {
                         queueOrTopic = "TOPIC_" + random.nextInt(10);
                     }
-                    Message message = producer.createBytesMessageToQueue(queueOrTopic, (label + "_" + offsets.get(queueOrTopic)).getBytes());
-//                    Message message = producer.createBytesMessageToQueue(queueOrTopic, new byte[30]);
+//                    Message message = producer.createBytesMessageToQueue(queueOrTopic, (label + "_" + offsets.get(queueOrTopic)).getBytes());
+                    Message message = producer.createBytesMessageToQueue(queueOrTopic, new byte[100 * 1024]);
                     logger.debug("queueOrTopic:{} offset:{}", queueOrTopic, label + "_" + offsets.get(queueOrTopic));
                     offsets.put(queueOrTopic, offsets.get(queueOrTopic) + 1);
                     producer.send(message);

@@ -37,7 +37,7 @@ public class YmBucketCache3 {
             // call the write module
             try {
                 yms.writeMessage(getCachedBucket(), getLengthList(), realMessageSize);
-                MessageCounter.getInstance().countMessage(realMessageSize);
+//                MessageCounter.getInstance().countMessage(realMessageSize);
                 releaseBucket();
                 System.out.println("bucket full");
 

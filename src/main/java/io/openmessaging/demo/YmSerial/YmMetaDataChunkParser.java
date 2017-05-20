@@ -25,7 +25,7 @@ public class YmMetaDataChunkParser {
     }
 
     public void readMessage() throws Exception {
-        System.out.println(current_offset);
+        int cnt = 0;
         while (current_offset < metaData.length) {
             DefaultBytesMessage msg = new DefaultBytesMessage(null);
             if(readMessageHead()) {
@@ -35,12 +35,17 @@ public class YmMetaDataChunkParser {
                     readKeyValue(msg);
                 }
                 previous_offset = current_offset;
-                System.out.println(msg);
+//                System.out.println(msg);
+                cnt++;
+                System.out.println(cnt);
             }
             else return;
         }
 
+
     }
+
+
 
     private boolean readMessageHead() throws Exception {
         int signature = readSignature();
@@ -58,7 +63,7 @@ public class YmMetaDataChunkParser {
         int signature = readSignature();
         if (signature == SerialConfig.SIGNATURE_BODY) {
             int bodyLength = readLength();
-            System.out.println("body length " + bodyLength);
+//            System.out.println("body length " + bodyLength);
             msg.setBody(getStringBytes(bodyLength));
         } else throw new Exception("bad body signature, offset " + current_offset);
     }
@@ -108,7 +113,7 @@ public class YmMetaDataChunkParser {
                 (metaData[current_offset + 1] << 16 & 0x00FF0000) |
                 (metaData[current_offset + 2] << 8 & 0x0000FF00) |
                 (metaData[current_offset + 3] & 0x000000FF));
-        System.out.println("length: " + r);
+//        System.out.println("length: " + r);
         current_offset += 4;
         return r;
     }

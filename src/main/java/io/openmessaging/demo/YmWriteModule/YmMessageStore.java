@@ -1,5 +1,7 @@
 package io.openmessaging.demo.YmWriteModule;
 
+import io.openmessaging.demo.YmSerial.SerialConfig;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -96,7 +98,7 @@ public class YmMessageStore {
     }
 
     public void writeEndBytes() {
-        mbb.put(new byte[]{(byte)255});
+        mbb.put(new byte[]{(byte) SerialConfig.SIGNATURE_END});
     }
 
 }
