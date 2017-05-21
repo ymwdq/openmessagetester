@@ -21,7 +21,6 @@ public class YmMessageReader {
     private FileChannel fileChannel;
     private final long MAX_BUFFER_SIZE = StoreConfig.MAX_BUFFER_SIZE;
     private static YmMessageReader ymr = new YmMessageReader();
-    private int DATA_CHUNK_SIZE = StoreConfig.DATA_CHUNK_SIZE;
     private YmMessageMetaDataParser dataParser;
 
 
@@ -31,7 +30,7 @@ public class YmMessageReader {
         try {
             raf = new RandomAccessFile(file, "rw");
             fileChannel = raf.getChannel();
-            mbb = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, MAX_BUFFER_SIZE + DATA_CHUNK_SIZE);
+            mbb = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, MAX_BUFFER_SIZE);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -53,7 +52,7 @@ public class YmMessageReader {
     public void readData() {
         YmMetaDataChunkParser parser = new YmMetaDataChunkParser();
 
-        while (currentPos < MAX_BUFFER_SIZE + DATA_CHUNK_SIZE) {
+        while (currentPos < (MAX_BUFFER_SIZE)) {
             // call the consumer thread
             System.out.println("read data chunk");
             parser.setMetaData(readDataChunk(), 0);
@@ -62,13 +61,11 @@ public class YmMessageReader {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
         }
-
     }
 
     public byte[] readDataChunk() {
-        byte[] dataChunk = new byte[DATA_CHUNK_SIZE];
+        byte[] dataChunk = new byte[(int)MAX_BUFFER_SIZE];
         mbb.get(dataChunk);
         currentPos += dataChunk.length;
         return dataChunk;

@@ -34,7 +34,6 @@ public class YmMessageMeta implements BytesMessage {
 
 
     public byte[] getRealMetaData() {
-        copyEndSignature();
         // to optimize
         byte[] r = new byte[current_offset];
         for (int i = 0; i < current_offset; i++) {
@@ -62,10 +61,6 @@ public class YmMessageMeta implements BytesMessage {
         current_offset += 4;
     }
 
-    public void copyEndSignature() {
-        copyHeaderSignature(SerialConfig.SIGNATURE_END);
-        current_offset += SerialConfig.HEADER_SIZE;
-    }
 
 
     public byte[] intToByte4(int i, byte[] target, int offset) {

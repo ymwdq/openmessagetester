@@ -35,13 +35,10 @@ public class YmMetaDataChunkParser {
                     readKeyValue(msg);
                 }
                 previous_offset = current_offset;
-//                System.out.println(msg);
-                cnt++;
-                System.out.println(cnt);
+                System.out.println(msg);
             }
             else return;
         }
-
 
     }
 
