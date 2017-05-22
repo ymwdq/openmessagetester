@@ -37,7 +37,7 @@ public class YmBucketCache4 {
             try {
                 System.out.println("bucket full");
                 yms.writeMessage(getCachedBucket(), currentSize);
-                MessageCounter.getInstance().countMessage(currentSize);
+//                MessageCounter.getInstance().countMessage(currentSize);
                 releaseBucket();
             } catch (IOException e) {
                 e.printStackTrace();
