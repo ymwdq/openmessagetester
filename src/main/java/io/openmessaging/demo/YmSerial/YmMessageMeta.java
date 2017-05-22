@@ -17,8 +17,9 @@ public class YmMessageMeta implements BytesMessage {
         copyLengthBytes(0);
         copyHeaderSignature(SerialConfig.SIGNATURE_BODY);
         copyLengthBytes(body.length);
-        System.arraycopy(body, 0, metaData, current_offset, body.length);
-        current_offset += body.length;
+//        System.arraycopy(body, 0, metaData, current_offset, body.length);
+        copyBody(body);
+//        current_offset += body.length;
 
         refreshLength();
     }
@@ -117,6 +118,13 @@ public class YmMessageMeta implements BytesMessage {
 
         refreshLength();
         return this;
+    }
+
+    private void copyBody(byte[] body) {
+        for (int i = 0; i < body.length; i++) {
+            metaData[current_offset] = body[i];
+            current_offset++;
+        }
     }
 
     @Override public Message putHeaders(String key, long value) {

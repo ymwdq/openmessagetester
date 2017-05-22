@@ -40,7 +40,7 @@ public class YmProducerTest1 {
                 Class kvClass = Class.forName("io.openmessaging.demo.DefaultKeyValue");
                 KeyValue keyValue = (KeyValue) kvClass.newInstance();
                 keyValue.put("STORE_PATH", Constants.STORE_PATH);
-                Class producerClass = Class.forName("io.openmessaging.demo.YmProducer4");
+                Class producerClass = Class.forName("io.openmessaging.demo.YmProducer5");
                 producer = (Producer) producerClass.getConstructor(new Class[]{KeyValue.class}).newInstance(new Object[]{keyValue});
                 if (producer == null) {
                     throw new InstantiationException("Init Producer Failed");
