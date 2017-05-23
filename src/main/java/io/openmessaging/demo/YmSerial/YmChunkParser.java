@@ -10,15 +10,15 @@ import java.util.List;
  */
 public class YmChunkParser {
     private byte[] metaData;
-    private int current_offset;
-    private int pre_offset;
+    private int currentOffset;
+    private int preOffset;
     private List<DefaultBytesMessage> msgList;
     boolean over;
 
     public YmChunkParser() {
         msgList = new LinkedList<>();
-        current_offset = 0;
-        pre_offset = 0;
+        currentOffset = 0;
+        preOffset = 0;
     }
 
     public void setMetaData(byte[] metaData) {
@@ -31,7 +31,7 @@ public class YmChunkParser {
     }
 
     public void readChunk() {
-        while (current_offset < metaData.length) {
+        while (currentOffset < metaData.length) {
             if (over) return;
             try {
                 DefaultBytesMessage msg = readMessage();
@@ -51,10 +51,10 @@ public class YmChunkParser {
             over = true;
             return null;
         }
-        while (current_offset - pre_offset < msg_length) {
+        while (currentOffset - preOffset < msg_length) {
             readBodyAndKeyValue(msg);
         }
-        pre_offset = current_offset;
+        preOffset = currentOffset;
         return msg;
     }
 
@@ -79,7 +79,7 @@ public class YmChunkParser {
         } else if (signature == SerialConfig.SIGNATURE_END) {
             over = true;
         } else {
-            throw new Exception("bad signature, offset: " + current_offset);
+            throw new Exception("bad signature, offset: " + currentOffset);
         }
     }
 
@@ -96,7 +96,7 @@ public class YmChunkParser {
         else if (signature == SerialConfig.SIGNATURE_INT) msg.putHeaders(key, readInt());
         else if (signature == SerialConfig.SIGNATURE_LONG) msg.putHeaders(key, readLong());
         else if (signature == SerialConfig.SIGNATURE_DOUBLE) msg.putHeaders(key, readDouble());
-        else throw new Exception("bad offset: " + current_offset);
+        else throw new Exception("bad offset: " + currentOffset);
     }
 
     private void readPropertyKeyValue(DefaultBytesMessage msg) throws Exception {
@@ -107,20 +107,20 @@ public class YmChunkParser {
         else if (signature == SerialConfig.SIGNATURE_INT) msg.putProperties(key, readInt());
         else if (signature == SerialConfig.SIGNATURE_LONG) msg.putProperties(key, readLong());
         else if (signature == SerialConfig.SIGNATURE_DOUBLE) msg.putProperties(key, readDouble());
-        else throw new Exception("bad offset: " + current_offset);
+        else throw new Exception("bad offset: " + currentOffset);
     }
 
 
     private int readSignature() {
-        return metaData[current_offset++];
+        return metaData[currentOffset++];
     }
 
     private int readLength() {
-        int r = ((metaData[current_offset] << 24 & 0xFF000000) |
-                (metaData[current_offset + 1] << 16 & 0x00FF0000) |
-                (metaData[current_offset + 2] << 8 & 0x0000FF00) |
-                (metaData[current_offset + 3] & 0x000000FF));
-        current_offset += 4;
+        int r = ((metaData[currentOffset] << 24 & 0xFF000000) |
+                (metaData[currentOffset + 1] << 16 & 0x00FF0000) |
+                (metaData[currentOffset + 2] << 8 & 0x0000FF00) |
+                (metaData[currentOffset + 3] & 0x000000FF));
+        currentOffset += 4;
         return r;
     }
 
@@ -140,10 +140,10 @@ public class YmChunkParser {
 
     private byte[] getStringBytes(int stringLength) {
         byte[] r = new byte[stringLength];
-        for (int i = current_offset; i < current_offset + stringLength; i++) {
-            r[i - current_offset] = metaData[i];
+        for (int i = currentOffset; i < currentOffset + stringLength; i++) {
+            r[i - currentOffset] = metaData[i];
         }
-        current_offset += stringLength;
+        currentOffset += stringLength;
         return r;
     }
 
@@ -152,7 +152,7 @@ public class YmChunkParser {
             int length = readLength();
             return new String(getStringBytes(length));
         } else {
-            throw new Exception("bad string signature, current offset " + current_offset);
+            throw new Exception("bad string signature, current offset " + currentOffset);
 
         }
     }
@@ -161,7 +161,7 @@ public class YmChunkParser {
         if (readSignature() == SerialConfig.SIGNATURE_INT) {
             return readInt();
         } else {
-            throw new Exception("bad int signature, current offset " + current_offset);
+            throw new Exception("bad int signature, current offset " + currentOffset);
         }
     }
 

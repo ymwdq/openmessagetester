@@ -60,4 +60,13 @@ public class YmBucketCache5 {
         currentSize = 0;
     }
 
+    public synchronized void flush() {
+        try {
+            System.out.println("flush");
+            yms.writeMessage(cachedBucket, currentSize);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

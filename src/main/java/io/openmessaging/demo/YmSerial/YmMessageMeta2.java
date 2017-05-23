@@ -10,8 +10,8 @@ import io.openmessaging.Message;
 public class YmMessageMeta2 implements BytesMessage{
     private byte[] metaData;
     private byte[] bodyData;
-    private int current_offset = 0;
-    private int body_length = 0;
+    private int currentOffset = 0;
+    private int bodyLength = 0;
 
     public YmMessageMeta2(byte[] body) {
         metaData = new byte[SerialConfig.MAX_MESSAGE_HEADER_SIZE];
@@ -23,8 +23,8 @@ public class YmMessageMeta2 implements BytesMessage{
 
     public byte[] getRealMetaData() {
         // to optimize
-        byte[] r = new byte[current_offset];
-        for (int i = 0; i < current_offset; i++) {
+        byte[] r = new byte[currentOffset];
+        for (int i = 0; i < currentOffset; i++) {
             r[i] = metaData[i];
         }
         return r;
@@ -40,26 +40,38 @@ public class YmMessageMeta2 implements BytesMessage{
     }
 
     public int getMetaDataLength() {
-        return this.current_offset;
+        return this.currentOffset;
     }
 
     public int getTotalLength() {
-        return body_length + current_offset;
+        return bodyLength + currentOffset;
     }
 
     private void copyHeaderSignature(int signature) {
-        intToByte1(signature, metaData, current_offset);
-        current_offset += SerialConfig.HEADER_SIZE;
+        intToByte1(signature, metaData, currentOffset);
+        currentOffset += SerialConfig.HEADER_SIZE;
     }
 
     private void copyLengthBytes(int length) {
-        intToByte4(length, metaData, current_offset);
-        current_offset += SerialConfig.BLOCK_LENGTH_NUM;
+        intToByte4(length, metaData, currentOffset);
+        currentOffset += SerialConfig.BLOCK_LENGTH_NUM;
     }
 
     private void copyInt(int i) {
-        intToByte4(i, metaData, current_offset);
-        current_offset += 4;
+        intToByte4(i, metaData, currentOffset);
+        currentOffset += 4;
+    }
+
+    private void copyBytes(byte[] src, int srcOffset, byte[] dst, int dstOffset, int length) {
+        int i = srcOffset;
+        int j = dstOffset;
+        int cnt = 0;
+        while (cnt < length) {
+            dst[j] = src[i];
+            i++;
+            j++;
+            cnt++;
+        }
     }
 
 
@@ -83,12 +95,12 @@ public class YmMessageMeta2 implements BytesMessage{
     }
 
     public void copyString(String s, byte[] target, int offset) {
-        System.arraycopy(s.getBytes(), 0, target, offset, s.getBytes().length);
-        current_offset += s.getBytes().length;
+        copyBytes(s.getBytes(), 0, target, offset, s.getBytes().length);
+        currentOffset += s.getBytes().length;
     }
 
     public void copyTotalLength() {
-        intToByte4(body_length + current_offset, metaData, 1);
+        intToByte4(bodyLength + currentOffset, metaData, 1);
     }
 
     @Override public byte[] getBody() {
@@ -111,7 +123,7 @@ public class YmMessageMeta2 implements BytesMessage{
         copyHeaderSignature(SerialConfig.SIGNATURE_HEADER);
         copyHeaderSignature(SerialConfig.SIGNATURE_STRING);
         copyLengthBytes(key.length());
-        copyString(key, this.metaData, current_offset);
+        copyString(key, this.metaData, currentOffset);
         copyHeaderSignature(SerialConfig.SIGNATURE_INT);
         copyInt(value);
 
@@ -120,7 +132,7 @@ public class YmMessageMeta2 implements BytesMessage{
 
     private void copyBody(byte[] body) {
         bodyData = body;
-        body_length = body.length;
+        bodyLength = body.length;
     }
 
     @Override public Message putHeaders(String key, long value) {
@@ -136,10 +148,10 @@ public class YmMessageMeta2 implements BytesMessage{
 
         copyHeaderSignature(SerialConfig.SIGNATURE_STRING);
         copyLengthBytes(key.length());
-        copyString(key, metaData, current_offset);
+        copyString(key, metaData, currentOffset);
         copyHeaderSignature(SerialConfig.SIGNATURE_STRING);
         copyLengthBytes(value.length());
-        copyString(value, metaData, current_offset);
+        copyString(value, metaData, currentOffset);
         return this;
     }
 
@@ -148,7 +160,7 @@ public class YmMessageMeta2 implements BytesMessage{
 
         copyHeaderSignature(SerialConfig.SIGNATURE_STRING);
         copyLengthBytes(key.length());
-        copyString(key, this.metaData, current_offset);
+        copyString(key, this.metaData, currentOffset);
 
         copyHeaderSignature(SerialConfig.SIGNATURE_INT);
         copyInt(value);
@@ -169,11 +181,11 @@ public class YmMessageMeta2 implements BytesMessage{
 
         copyHeaderSignature(SerialConfig.SIGNATURE_STRING);
         copyLengthBytes(key.length());
-        copyString(key, metaData, current_offset);
+        copyString(key, metaData, currentOffset);
 
         copyHeaderSignature(SerialConfig.SIGNATURE_STRING);
         copyLengthBytes(value.length());
-        copyString(value, metaData, current_offset);
+        copyString(value, metaData, currentOffset);
         return this;
     }
 

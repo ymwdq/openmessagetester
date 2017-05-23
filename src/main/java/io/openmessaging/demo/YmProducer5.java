@@ -89,4 +89,9 @@ public class YmProducer5 implements Producer{
         throw new UnsupportedOperationException("Unsupported");
     }
 
+    public void flush() {
+        // to do ...
+        this.cache.flush();
+    }
+
 }

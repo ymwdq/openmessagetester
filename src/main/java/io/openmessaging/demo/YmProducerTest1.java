@@ -73,6 +73,7 @@ public class YmProducerTest1 {
                     producer.send(message);
                     sendNum++;
                     if (sendNum >= Constants.PRO_MAX) {
+                        ((YmProducer5)producer).flush();
                         break;
                     }
                 } catch (Exception e) {

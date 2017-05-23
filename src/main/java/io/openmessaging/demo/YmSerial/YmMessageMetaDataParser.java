@@ -9,11 +9,11 @@ import io.openmessaging.demo.DefaultBytesMessage;
 public class YmMessageMetaDataParser {
     private DefaultBytesMessage msg;
     private byte[] metaData;
-    private int current_offset;
-    private int total_length;
+    private int currentOffset;
+    private int totalLength;
 
     public YmMessageMetaDataParser() {
-        this.current_offset = 0;
+        this.currentOffset = 0;
     }
 
     public void setMetaData(byte[] metaData) {
@@ -25,7 +25,7 @@ public class YmMessageMetaDataParser {
     public void readMessage() throws Exception {
         readMessageHead();
         readBody();
-        while (current_offset < total_length) {
+        while (currentOffset < totalLength) {
             readKeyValue();
         }
     }
@@ -33,7 +33,7 @@ public class YmMessageMetaDataParser {
     private void readMessageHead() throws Exception {
         int signature = readSignature();
         if (signature == SerialConfig.SIGNATURE_MESSAGE) {
-            total_length = readLength();
+            totalLength = readLength();
         } else throw new Exception("bad message first signature");
     }
 
@@ -43,7 +43,7 @@ public class YmMessageMetaDataParser {
             int bodyLength = readLength();
             System.out.println("body length " + bodyLength);
             msg.setBody(getStringBytes(bodyLength));
-        } else throw new Exception("bad body signature, offset " + current_offset);
+        } else throw new Exception("bad body signature, offset " + currentOffset);
     }
 
     private void readKeyValue() throws Exception {
@@ -57,42 +57,42 @@ public class YmMessageMetaDataParser {
                 case SerialConfig.SIGNATURE_STRING:
                     if (keyValueHead == SerialConfig.SIGNATURE_HEADER) msg.putHeaders(key, readString());
                     else if (keyValueHead == SerialConfig.SIGNATURE_PROPERTY) msg.putProperties(key, readString());
-                    else throw new Exception("bad key value signature, offset " + current_offset);
+                    else throw new Exception("bad key value signature, offset " + currentOffset);
                     break;
                 case SerialConfig.SIGNATURE_INT:
                     if (keyValueHead == SerialConfig.SIGNATURE_HEADER) msg.putHeaders(key, readInt());
                     else if (keyValueHead == SerialConfig.SIGNATURE_PROPERTY) msg.putProperties(key, readInt());
-                    else throw new Exception("bad key value signature, offset " + current_offset);
+                    else throw new Exception("bad key value signature, offset " + currentOffset);
                     break;
                 case SerialConfig.SIGNATURE_LONG:
                     if (keyValueHead == SerialConfig.SIGNATURE_HEADER) msg.putHeaders(key, readLong());
                     else if (keyValueHead == SerialConfig.SIGNATURE_PROPERTY) msg.putProperties(key, readLong());
-                    else throw new Exception("bad key value signature, offset " + current_offset);
+                    else throw new Exception("bad key value signature, offset " + currentOffset);
                     break;
                 case SerialConfig.SIGNATURE_DOUBLE:
                     if (keyValueHead == SerialConfig.SIGNATURE_HEADER) msg.putHeaders(key, readDouble());
                     else if (keyValueHead == SerialConfig.SIGNATURE_PROPERTY) msg.putProperties(key, readDouble());
-                    else throw new Exception("bad key value signature, offset " + current_offset);
+                    else throw new Exception("bad key value signature, offset " + currentOffset);
                     break;
                 default:
-                    throw new Exception("bad key value block, offset " + current_offset);
+                    throw new Exception("bad key value block, offset " + currentOffset);
 
             }
-        } else throw new Exception("bad key value signature, current offset " + current_offset);
+        } else throw new Exception("bad key value signature, current offset " + currentOffset);
     }
 
 
     public int readSignature() {
-        return metaData[current_offset++];
+        return metaData[currentOffset++];
     }
 
     private int readLength() {
-        int r = ((metaData[current_offset] << 24 & 0xFF000000) |
-                (metaData[current_offset + 1] << 16 & 0x00FF0000) |
-                (metaData[current_offset + 2] << 8 & 0x0000FF00) |
-                (metaData[current_offset + 3] & 0x000000FF));
+        int r = ((metaData[currentOffset] << 24 & 0xFF000000) |
+                (metaData[currentOffset + 1] << 16 & 0x00FF0000) |
+                (metaData[currentOffset + 2] << 8 & 0x0000FF00) |
+                (metaData[currentOffset + 3] & 0x000000FF));
         System.out.println("length: " + r);
-        current_offset += 4;
+        currentOffset += 4;
         return r;
     }
 
@@ -112,10 +112,10 @@ public class YmMessageMetaDataParser {
 
     private byte[] getStringBytes(int stringLength) {
         byte[] r = new byte[stringLength];
-        for (int i = current_offset; i < current_offset + stringLength; i++) {
-            r[i - current_offset] = metaData[i];
+        for (int i = currentOffset; i < currentOffset + stringLength; i++) {
+            r[i - currentOffset] = metaData[i];
         }
-        current_offset += stringLength;
+        currentOffset += stringLength;
         return r;
     }
 
@@ -124,7 +124,7 @@ public class YmMessageMetaDataParser {
             int length = readLength();
             return new String(getStringBytes(length));
         } else {
-            throw new Exception("bad string signature, current offset " + current_offset);
+            throw new Exception("bad string signature, current offset " + currentOffset);
 
         }
     }
@@ -133,7 +133,7 @@ public class YmMessageMetaDataParser {
         if (readSignature() == SerialConfig.SIGNATURE_INT) {
             return readInt();
         } else {
-            throw new Exception("bad int signature, current offset " + current_offset);
+            throw new Exception("bad int signature, current offset " + currentOffset);
         }
     }
 
