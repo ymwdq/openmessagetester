@@ -21,10 +21,8 @@ public class YmMessageMeta2 implements BytesMessage{
     }
 
 
-
     public byte[] getRealMetaData() {
         // to optimize
-
         byte[] r = new byte[current_offset];
         for (int i = 0; i < current_offset; i++) {
             r[i] = metaData[i];
@@ -49,24 +47,23 @@ public class YmMessageMeta2 implements BytesMessage{
         return body_length + current_offset;
     }
 
-    public void copyHeaderSignature(int signature) {
+    private void copyHeaderSignature(int signature) {
         intToByte1(signature, metaData, current_offset);
         current_offset += SerialConfig.HEADER_SIZE;
     }
 
-    public void copyLengthBytes(int length) {
+    private void copyLengthBytes(int length) {
         intToByte4(length, metaData, current_offset);
         current_offset += SerialConfig.BLOCK_LENGTH_NUM;
     }
 
-    public void copyInt(int i) {
+    private void copyInt(int i) {
         intToByte4(i, metaData, current_offset);
         current_offset += 4;
     }
 
 
-
-    public byte[] intToByte4(int i, byte[] target, int offset) {
+    private byte[] intToByte4(int i, byte[] target, int offset) {
         target[offset + 3] = (byte) (i & 0xFF);
         target[offset + 2] = (byte) (i >> 8 & 0xFF);
         target[offset + 1] = (byte) (i >> 16 & 0xFF);
@@ -74,13 +71,13 @@ public class YmMessageMeta2 implements BytesMessage{
         return target;
     }
 
-    public byte[] intToByte2(int i, byte[] target, int offset) {
+    private byte[] intToByte2(int i, byte[] target, int offset) {
         target[offset + 1] = (byte) (i & 0xFF);
         target[offset] = (byte) (i >> 8 & 0xFF);
         return target;
     }
 
-    public byte[] intToByte1(int i, byte[] target, int offset) {
+    private byte[] intToByte1(int i, byte[] target, int offset) {
         target[offset] = (byte) (i & 0xFF);
         return target;
     }
@@ -143,12 +140,20 @@ public class YmMessageMeta2 implements BytesMessage{
         copyHeaderSignature(SerialConfig.SIGNATURE_STRING);
         copyLengthBytes(value.length());
         copyString(value, metaData, current_offset);
-
         return this;
     }
 
     @Override public Message putProperties(String key, int value) {
-        return null;
+        copyHeaderSignature(SerialConfig.SIGNATURE_PROPERTY);
+
+        copyHeaderSignature(SerialConfig.SIGNATURE_STRING);
+        copyLengthBytes(key.length());
+        copyString(key, this.metaData, current_offset);
+
+        copyHeaderSignature(SerialConfig.SIGNATURE_INT);
+        copyInt(value);
+
+        return this;
     }
 
     @Override public Message putProperties(String key, long value) {
@@ -160,7 +165,16 @@ public class YmMessageMeta2 implements BytesMessage{
     }
 
     @Override public Message putProperties(String key, String value) {
-        return null;
+        copyHeaderSignature(SerialConfig.SIGNATURE_PROPERTY);
+
+        copyHeaderSignature(SerialConfig.SIGNATURE_STRING);
+        copyLengthBytes(key.length());
+        copyString(key, metaData, current_offset);
+
+        copyHeaderSignature(SerialConfig.SIGNATURE_STRING);
+        copyLengthBytes(value.length());
+        copyString(value, metaData, current_offset);
+        return this;
     }
 
 

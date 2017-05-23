@@ -70,10 +70,10 @@ public class YmChunkParser {
     public void readBodyAndKeyValue(DefaultBytesMessage msg) throws Exception{
         int signature = readSignature();
         if (signature == SerialConfig.SIGNATURE_HEADER) {
-            readHeader(msg);
+            readHeaderKeyValue(msg);
         } else if (signature == SerialConfig.SIGNATURE_PROPERTY) {
             // to do ...
-            System.out.println("props");
+            readPropertyKeyValue(msg);
         } else if (signature == SerialConfig.SIGNATURE_BODY) {
             readBody(msg);
         } else if (signature == SerialConfig.SIGNATURE_END) {
@@ -88,7 +88,7 @@ public class YmChunkParser {
         msg.setBody(getStringBytes(bodyLength));
     }
 
-    private void readHeader(DefaultBytesMessage msg) throws Exception {
+    private void readHeaderKeyValue(DefaultBytesMessage msg) throws Exception {
         readSignature();
         String key = readString();
         int signature = readSignature();
@@ -96,6 +96,17 @@ public class YmChunkParser {
         else if (signature == SerialConfig.SIGNATURE_INT) msg.putHeaders(key, readInt());
         else if (signature == SerialConfig.SIGNATURE_LONG) msg.putHeaders(key, readLong());
         else if (signature == SerialConfig.SIGNATURE_DOUBLE) msg.putHeaders(key, readDouble());
+        else throw new Exception("bad offset: " + current_offset);
+    }
+
+    private void readPropertyKeyValue(DefaultBytesMessage msg) throws Exception {
+        readSignature();
+        String key = readString();
+        int signature = readSignature();
+        if (signature == SerialConfig.SIGNATURE_STRING) msg.putProperties(key, readString());
+        else if (signature == SerialConfig.SIGNATURE_INT) msg.putProperties(key, readInt());
+        else if (signature == SerialConfig.SIGNATURE_LONG) msg.putProperties(key, readLong());
+        else if (signature == SerialConfig.SIGNATURE_DOUBLE) msg.putProperties(key, readDouble());
         else throw new Exception("bad offset: " + current_offset);
     }
 
