@@ -13,6 +13,8 @@ public class YmMessageFactory2 implements MessageFactory{
         YmMessageMeta2 metaMsg = new YmMessageMeta2(body);
         metaMsg.setBody(body);
         metaMsg.putHeaders(MessageHeader.TOPIC, topic);
+        metaMsg.refreshBodyByte();
+        metaMsg.refreshLengthByte();
         return metaMsg;
     }
 
@@ -20,6 +22,8 @@ public class YmMessageFactory2 implements MessageFactory{
         YmMessageMeta2 metaMsg = new YmMessageMeta2(body);
         metaMsg.setBody(body);
         metaMsg.putHeaders(MessageHeader.QUEUE, queue);
+        metaMsg.refreshBodyByte();
+        metaMsg.refreshLengthByte();
         return metaMsg;
     }
 

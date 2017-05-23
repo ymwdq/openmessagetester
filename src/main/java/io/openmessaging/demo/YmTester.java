@@ -1,6 +1,7 @@
 package io.openmessaging.demo;
 
 import io.openmessaging.Message;
+import io.openmessaging.demo.Util.YmLogUtil;
 
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;

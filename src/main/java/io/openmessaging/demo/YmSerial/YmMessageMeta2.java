@@ -11,14 +11,12 @@ public class YmMessageMeta2 implements BytesMessage{
     private byte[] metaData;
     private byte[] bodyData;
     private int current_offset = 0;
-    private int totalLength = 0;
+    private int body_length = 0;
 
     public YmMessageMeta2(byte[] body) {
         metaData = new byte[SerialConfig.MAX_MESSAGE_HEADER_SIZE];
         copyHeaderSignature(SerialConfig.SIGNATURE_MESSAGE);
         copyLengthBytes(0);
-        copyHeaderSignature(SerialConfig.SIGNATURE_BODY);
-        copyLengthBytes(body.length);
         copyBody(body);
     }
 
@@ -26,6 +24,7 @@ public class YmMessageMeta2 implements BytesMessage{
 
     public byte[] getRealMetaData() {
         // to optimize
+
         byte[] r = new byte[current_offset];
         for (int i = 0; i < current_offset; i++) {
             r[i] = metaData[i];
@@ -33,12 +32,21 @@ public class YmMessageMeta2 implements BytesMessage{
         return r;
     }
 
+    public void refreshLengthByte() {
+        copyTotalLength();
+    }
+
+    public void refreshBodyByte() {
+        copyHeaderSignature(SerialConfig.SIGNATURE_BODY);
+        copyLengthBytes(bodyData.length);
+    }
+
     public int getMetaDataLength() {
         return this.current_offset;
     }
 
     public int getTotalLength() {
-        return this.totalLength + current_offset;
+        return body_length + current_offset;
     }
 
     public void copyHeaderSignature(int signature) {
@@ -83,7 +91,7 @@ public class YmMessageMeta2 implements BytesMessage{
     }
 
     public void copyTotalLength() {
-        intToByte4(current_offset, metaData, 1);
+        intToByte4(body_length + current_offset, metaData, 1);
     }
 
     @Override public byte[] getBody() {
@@ -114,8 +122,8 @@ public class YmMessageMeta2 implements BytesMessage{
     }
 
     private void copyBody(byte[] body) {
-        this.bodyData = body;
-        totalLength += body.length;
+        bodyData = body;
+        body_length = body.length;
     }
 
     @Override public Message putHeaders(String key, long value) {

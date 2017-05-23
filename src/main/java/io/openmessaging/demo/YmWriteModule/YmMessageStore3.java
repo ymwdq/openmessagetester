@@ -63,7 +63,6 @@ public class YmMessageStore3 {
             for (YmMessageMeta2 eachMessage : eachTopicOrQueue) {
                 mbb.put(eachMessage.getRealMetaData(), 0, eachMessage.getMetaDataLength());
                 mbb.put(eachMessage.getBody(), 0, eachMessage.getBody().length);
-
             }
         }
             currentPos += totalLength;
