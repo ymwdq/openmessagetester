@@ -34,7 +34,6 @@ public class YmBucketCache5 {
             cachedBucket.put(queueOrTopic, tmp);
         }
         if (isFull()) {
-            // call the write module
             try {
                 System.out.println("bucket full");
                 yms.writeMessage(getCachedBucket(), currentSize);

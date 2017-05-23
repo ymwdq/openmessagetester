@@ -6,9 +6,9 @@ import io.openmessaging.Message;
 import io.openmessaging.demo.DefaultKeyValue;
 
 /**
- * Created by YangMing on 2017/5/22.
+ * Created by YangMing on 2017/5/23.
  */
-public class YmMessageMeta2 implements BytesMessage{
+public class YmMessageMeta3 implements BytesMessage {
     private byte[] metaData;
     private byte[] bodyData;
     private int currentOffset = 0;
@@ -16,14 +16,18 @@ public class YmMessageMeta2 implements BytesMessage{
     private KeyValue headers = new DefaultKeyValue();
     private KeyValue properties;
 
-    public YmMessageMeta2(byte[] body) {
+    public YmMessageMeta3(byte[] body) {
         metaData = new byte[SerialConfig.MAX_MESSAGE_HEADER_SIZE];
-        copyHeaderSignature(SerialConfig.SIGNATURE_MESSAGE);
-        copyLengthBytes(0);
         copyBody(body);
     }
 
+    public byte[] getRealMetaData() {
+        copyHeaderSignature(SerialConfig.SIGNATURE_MESSAGE);
+        copyLengthBytes(0);
+        for (String key : headers.keySet()) {
 
+        }
+    }
 
 
     public byte[] getRealMetaData() {
@@ -150,16 +154,7 @@ public class YmMessageMeta2 implements BytesMessage{
     }
 
     @Override public Message putHeaders(String key, String value) {
-        copyHeaderSignature(SerialConfig.SIGNATURE_HEADER);
 
-        copyHeaderSignature(SerialConfig.SIGNATURE_STRING);
-        copyLengthBytes(key.length());
-        copyString(key, metaData, currentOffset);
-        copyHeaderSignature(SerialConfig.SIGNATURE_STRING);
-        copyLengthBytes(value.length());
-        copyString(value, metaData, currentOffset);
-
-        headers.put(key, value);
         return this;
     }
 
@@ -195,6 +190,7 @@ public class YmMessageMeta2 implements BytesMessage{
         copyLengthBytes(value.length());
         copyString(value, metaData, currentOffset);
         return this;
+
     }
 
 
@@ -205,4 +201,5 @@ public class YmMessageMeta2 implements BytesMessage{
         System.out.println(msg);
         System.out.println("over");
     }
+
 }
