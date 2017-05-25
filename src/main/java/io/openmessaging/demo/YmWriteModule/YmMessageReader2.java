@@ -44,10 +44,12 @@ public class YmMessageReader2 {
 
     public void readNewFile() {
         init();
+        setCounter(this.counter+1);
     }
 
 
     public byte[] readDataChunk() {
+        readNewFile();
         byte[] dataChunk = new byte[(int)MAX_BUFFER_SIZE];
         mbb.get(dataChunk);
         return dataChunk;
@@ -59,6 +61,10 @@ public class YmMessageReader2 {
         chunkParser.setMetaData(dataChunk);
         chunkParser.readChunk();
         System.out.println(chunkParser.getMsgList().size());
+    }
+
+    public void setCounter(int counter) {
+        this.counter = counter;
     }
 
     public static void main(String[] args) {
