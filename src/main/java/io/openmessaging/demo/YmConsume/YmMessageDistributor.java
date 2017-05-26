@@ -61,9 +61,9 @@ public class YmMessageDistributor {
         }
     }
 
-    private void offer() {
-
-    }
+//    private void offer() {
+//        for ()
+//    }
 
     private boolean isDistributedOver() {
         return true;

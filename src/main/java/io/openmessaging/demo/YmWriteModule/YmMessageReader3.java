@@ -64,6 +64,7 @@ public class YmMessageReader3 {
         chunkParser.setMetaData(dataChunk);
         chunkParser.readChunk();
         HashMap<String, List<DefaultBytesMessage>> table = chunkParser.getTable();
+        System.out.println(table);
         System.out.println("read over");
     }
 
