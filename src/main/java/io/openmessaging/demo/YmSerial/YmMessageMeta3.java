@@ -3,30 +3,28 @@ package io.openmessaging.demo.YmSerial;
 import io.openmessaging.BytesMessage;
 import io.openmessaging.KeyValue;
 import io.openmessaging.Message;
-import io.openmessaging.demo.DefaultKeyValue;
+import io.openmessaging.Producer;
+import io.openmessaging.demo.DefaultBytesMessage;
+
+import java.util.function.BinaryOperator;
 
 /**
- * Created by YangMing on 2017/5/23.
+ * Created by YangMing on 2017/5/25.
  */
-public class YmMessageMeta3 implements BytesMessage {
+public class YmMessageMeta3 implements BytesMessage{
     private byte[] metaData;
     private byte[] bodyData;
     private int currentOffset = 0;
     private int bodyLength = 0;
-    private KeyValue headers = new DefaultKeyValue();
-    private KeyValue properties;
+    private DefaultBytesMessage defaultBytesMessage;
 
     public YmMessageMeta3(byte[] body) {
         metaData = new byte[SerialConfig.MAX_MESSAGE_HEADER_SIZE];
-        copyBody(body);
-    }
-
-    public byte[] getRealMetaData() {
         copyHeaderSignature(SerialConfig.SIGNATURE_MESSAGE);
         copyLengthBytes(0);
-        for (String key : headers.keySet()) {
+        copyBody(body);
 
-        }
+        defaultBytesMessage = new DefaultBytesMessage(body);
     }
 
 
@@ -37,6 +35,7 @@ public class YmMessageMeta3 implements BytesMessage {
             r[i] = metaData[i];
         }
         return r;
+
     }
 
     public void refreshLengthByte() {
@@ -117,15 +116,19 @@ public class YmMessageMeta3 implements BytesMessage {
     }
 
     @Override public BytesMessage setBody(byte[] body) {
+        this.bodyData = body;
+
+        defaultBytesMessage.setBody(body);
+
         return this;
     }
 
     @Override public KeyValue headers() {
-        return null;
+        return defaultBytesMessage.headers();
     }
 
     @Override public KeyValue properties() {
-        return null;
+        return defaultBytesMessage.properties();
     }
 
     @Override public Message putHeaders(String key, int value) {
@@ -136,7 +139,7 @@ public class YmMessageMeta3 implements BytesMessage {
         copyHeaderSignature(SerialConfig.SIGNATURE_INT);
         copyInt(value);
 
-
+        defaultBytesMessage.putHeaders(key, value);
         return this;
     }
 
@@ -154,6 +157,16 @@ public class YmMessageMeta3 implements BytesMessage {
     }
 
     @Override public Message putHeaders(String key, String value) {
+        copyHeaderSignature(SerialConfig.SIGNATURE_HEADER);
+
+        copyHeaderSignature(SerialConfig.SIGNATURE_STRING);
+        copyLengthBytes(key.length());
+        copyString(key, metaData, currentOffset);
+        copyHeaderSignature(SerialConfig.SIGNATURE_STRING);
+        copyLengthBytes(value.length());
+        copyString(value, metaData, currentOffset);
+
+        defaultBytesMessage.putHeaders(key, value);
 
         return this;
     }
@@ -168,10 +181,13 @@ public class YmMessageMeta3 implements BytesMessage {
         copyHeaderSignature(SerialConfig.SIGNATURE_INT);
         copyInt(value);
 
+        defaultBytesMessage.putProperties(key, value);
+
         return this;
     }
 
     @Override public Message putProperties(String key, long value) {
+
         return null;
     }
 
@@ -189,17 +205,10 @@ public class YmMessageMeta3 implements BytesMessage {
         copyHeaderSignature(SerialConfig.SIGNATURE_STRING);
         copyLengthBytes(value.length());
         copyString(value, metaData, currentOffset);
+
+        defaultBytesMessage.putProperties(key, value);
+
         return this;
-
-    }
-
-
-    public static void main(String[] args) {
-        byte[] test = {2, 3};
-        YmMessageMeta msg = new YmMessageMeta(test);
-        msg.putHeaders("111", 3);
-        System.out.println(msg);
-        System.out.println("over");
     }
 
 }

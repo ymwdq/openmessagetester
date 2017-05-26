@@ -1,18 +1,22 @@
 package io.openmessaging.demo.YmWriteModule;
 
+import io.openmessaging.demo.DefaultBytesMessage;
 import io.openmessaging.demo.Util.YmLogUtil;
 import io.openmessaging.demo.YmSerial.YmChunkParser;
+import io.openmessaging.demo.YmSerial.YmChunkParser2;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.HashMap;
+import java.util.List;
 
 /**
- * Created by YangMing on 2017/5/22.
+ * Created by YangMing on 2017/5/25.
  */
-public class YmMessageReader2 {
+public class YmMessageReader3 {
     private int counter = 1;
     private File file;
     private RandomAccessFile raf;
@@ -20,8 +24,8 @@ public class YmMessageReader2 {
     private FileChannel fileChannel;
 
     private final long MAX_BUFFER_SIZE = StoreConfig.MAX_BUFFER_SIZE;
-    private static YmMessageReader2 ymr = new YmMessageReader2();
-    private YmChunkParser chunkParser = new YmChunkParser();
+    private static YmMessageReader3 ymr = new YmMessageReader3();
+    private YmChunkParser2 chunkParser = new YmChunkParser2();
 
     public void init() {
         file = new File(StoreConfig.STORE_PATH + StoreConfig.FILE_NAME + counter);
@@ -34,12 +38,12 @@ public class YmMessageReader2 {
         }
     }
 
-    private YmMessageReader2() {
+    private YmMessageReader3() {
         init();
-        chunkParser = new YmChunkParser();
+        chunkParser = new YmChunkParser2();
     }
 
-    public static YmMessageReader2 getInstance() {
+    public static YmMessageReader3 getInstance() {
         return ymr;
     }
 
@@ -59,13 +63,14 @@ public class YmMessageReader2 {
         mbb.get(dataChunk);
         chunkParser.setMetaData(dataChunk);
         chunkParser.readChunk();
-        System.out.println(chunkParser.getMsgList().size());
+        HashMap<String, List<DefaultBytesMessage>> table = chunkParser.getTable();
+        System.out.println("read over");
     }
 
     public static void main(String[] args) {
         YmLogUtil timer = new YmLogUtil();
         timer.startCount();
-        YmMessageReader2 reader = YmMessageReader2.getInstance();
+        YmMessageReader3 reader = YmMessageReader3.getInstance();
         reader.readData();
         timer.endCount();
         timer.printTime();

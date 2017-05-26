@@ -13,5 +13,4 @@ public class Constants {
     public final static String TOPIC_PRE = System.getProperty("topic.pre", "TOPIC_");
     public final static String QUEUE_PRE = System.getProperty("topic.pre", "QUEUE_");
 
-
 }

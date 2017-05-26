@@ -41,4 +41,6 @@ public class SerialConfig {
     public static final int DOUBLE_SIZE = 8;
     public static final int MAX_MESSAGE_HEADER_SIZE = 1024;
 
+    public static final int CHUNK_TABLE_INIT_SIZE = 512;
+
 }

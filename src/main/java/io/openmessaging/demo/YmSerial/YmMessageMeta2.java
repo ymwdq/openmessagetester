@@ -13,8 +13,6 @@ public class YmMessageMeta2 implements BytesMessage{
     private byte[] bodyData;
     private int currentOffset = 0;
     private int bodyLength = 0;
-    private KeyValue headers = new DefaultKeyValue();
-    private KeyValue properties;
 
     public YmMessageMeta2(byte[] body) {
         metaData = new byte[SerialConfig.MAX_MESSAGE_HEADER_SIZE];
@@ -22,8 +20,6 @@ public class YmMessageMeta2 implements BytesMessage{
         copyLengthBytes(0);
         copyBody(body);
     }
-
-
 
 
     public byte[] getRealMetaData() {
@@ -159,7 +155,6 @@ public class YmMessageMeta2 implements BytesMessage{
         copyLengthBytes(value.length());
         copyString(value, metaData, currentOffset);
 
-        headers.put(key, value);
         return this;
     }
 

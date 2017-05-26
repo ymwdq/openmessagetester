@@ -1,7 +1,10 @@
 package io.openmessaging.demo.YmWriteModule;
 
+import io.openmessaging.Message;
 import io.openmessaging.demo.YmSerial.SerialConfig;
+import io.openmessaging.demo.YmSerial.YmMessageMeta;
 import io.openmessaging.demo.YmSerial.YmMessageMeta2;
+import io.openmessaging.demo.YmSerial.YmMessageMeta3;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -50,17 +53,17 @@ public class YmMessageStore3 {
 
     }
 
-    public synchronized void writeMessage  (HashMap<String, List<YmMessageMeta2>> msgTable, int totalLength) throws IOException {
+    public synchronized void writeMessage  (HashMap<String, List<YmMessageMeta3>> msgTable, int totalLength) throws IOException {
         if ((totalLength + currentPos) >= MAX_BUFFER_SIZE) {
             writeEndBytes();
             fileChannel.close();
-            System.out.println("write buffer full" + counter);
+            System.out.println("write to disk " + counter);
             counter += 1;
             init();
         }
         for (String key : msgTable.keySet()) {
-            List<YmMessageMeta2> eachTopicOrQueue = msgTable.get(key);
-            for (YmMessageMeta2 eachMessage : eachTopicOrQueue) {
+            List<YmMessageMeta3> eachTopicOrQueue = msgTable.get(key);
+            for (YmMessageMeta3 eachMessage : eachTopicOrQueue) {
                 mbb.put(eachMessage.getRealMetaData(), 0, eachMessage.getMetaDataLength());
                 mbb.put(eachMessage.getBody(), 0, eachMessage.getBody().length);
             }
