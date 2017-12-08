@@ -56,6 +56,7 @@ public class YmBucketCache6 {
     }
 
     public void releaseBucket() {
+        cachedBucket = null;
         cachedBucket = new HashMap<>(Config.MESSAGE_CACHE_HASH_TABLE_SIZE);
         currentSize = 0;
     }

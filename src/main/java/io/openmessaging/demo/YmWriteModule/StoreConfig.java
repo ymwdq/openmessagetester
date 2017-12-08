@@ -10,7 +10,7 @@ public class StoreConfig {
     public static final long MAX_FILE_SIZE = 2L * 1024L * 1024L * 1024L;
     public static final int DATA_CHUNK_SIZE = 256 * 1024 * 1024;
     public static final int CACHE_SIZE = Config.MAX_CACHE_SIZE;
-    public static final String STORE_PATH = "d://";
-    public static final String FILE_NAME = "testWrite";
+    public static String STORE_PATH = "";
+    public static final String FILE_NAME = "/testWrite";
     public static final int FILE_END_SIGNATURE = 255;
 }

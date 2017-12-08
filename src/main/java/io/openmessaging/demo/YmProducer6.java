@@ -3,6 +3,8 @@ package io.openmessaging.demo;
 import io.openmessaging.*;
 import io.openmessaging.demo.YmSerial.YmMessageMeta2;
 import io.openmessaging.demo.YmSerial.YmMessageMeta3;
+import io.openmessaging.demo.YmWriteModule.StoreConfig;
+import io.openmessaging.demo.YmWriteModule.YmMessageStore3;
 
 /**
  * Created by YangMing on 2017/5/25.
@@ -16,6 +18,7 @@ public class YmProducer6 implements Producer {
     public YmProducer6(KeyValue properties) {
         this.properties = properties;
         // get the BucketCache
+        StoreConfig.STORE_PATH = properties.getString("STORE_PATH");
         this.cache = YmMessageRegister3.getInstance().getCache();
     }
 
@@ -49,11 +52,11 @@ public class YmProducer6 implements Producer {
     @Override
     public void send(Message message) {
         if (message == null) throw new ClientOMSException("Message should not be null");
-//        String topic = message.headers().getString(MessageHeader.TOPIC);
-//        String queue = message.headers().getString(MessageHeader.QUEUE);
-//        if ((topic == null && queue == null) || (topic != null && queue != null)) {
-//            throw new ClientOMSException(String.format("Queue:%s Topic:%s should put one and only one", true, queue));
-//        }
+        String topic = message.headers().getString(MessageHeader.TOPIC);
+        String queue = message.headers().getString(MessageHeader.QUEUE);
+        if ((topic == null && queue == null) || (topic != null && queue != null)) {
+            throw new ClientOMSException(String.format("Queue:%s Topic:%s should put one and only one", true, queue));
+        }
         cache.addMessage((YmMessageMeta3)message, topicOrQueue);
     }
 

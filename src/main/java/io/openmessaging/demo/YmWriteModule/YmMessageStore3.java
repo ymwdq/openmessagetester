@@ -26,6 +26,8 @@ public class YmMessageStore3 {
     private MappedByteBuffer mbb;
     private long currentPos;
     private int counter = 1;
+    private String storePath;
+    private boolean hasInit = false;
     private static YmMessageStore3 yms = new YmMessageStore3();
     private YmMessageStore3() {
         init();
@@ -53,7 +55,7 @@ public class YmMessageStore3 {
 
     }
 
-    public synchronized void writeMessage  (HashMap<String, List<YmMessageMeta3>> msgTable, int totalLength) throws IOException {
+    public synchronized void writeMessage(HashMap<String, List<YmMessageMeta3>> msgTable, int totalLength) throws IOException {
         if ((totalLength + currentPos) >= MAX_BUFFER_SIZE) {
             writeEndBytes();
             fileChannel.close();
@@ -73,5 +75,14 @@ public class YmMessageStore3 {
 
     public void writeEndBytes() {
         mbb.put(new byte[]{(byte) SerialConfig.SIGNATURE_END});
+    }
+
+    public void setStorePath(String storePath) {
+        this.storePath = storePath;
+        init();
+    }
+
+    public boolean hasInit() {
+        return hasInit;
     }
 }

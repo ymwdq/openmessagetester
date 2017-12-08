@@ -5,6 +5,8 @@ import io.openmessaging.Message;
 import io.openmessaging.PullConsumer;
 import io.openmessaging.demo.ClientOMSException;
 import io.openmessaging.demo.DefaultBytesMessage;
+import io.openmessaging.demo.YmSerial.SerialConfig;
+import io.openmessaging.demo.YmWriteModule.StoreConfig;
 import io.openmessaging.demo.mydemo.MyMessageStore;
 
 import java.util.*;
@@ -13,18 +15,20 @@ import java.util.*;
  * Created by YangMing on 2017/5/25.
  */
 public class YmPullConsumer implements PullConsumer{
-    private MyMessageStore messageStore = MyMessageStore.getInstance();
     private KeyValue properties;
     private String queue;
     private Set<String> topics = new HashSet<>();
-    private Queue<List<DefaultBytesMessage>> msgQueue;
     private List<DefaultBytesMessage> msgList;
     private boolean isFinish;
     private int offset;
+    private String currentTopicOrQueue;
+    private YmMessageDistributor distributor;
 
     public YmPullConsumer(KeyValue properties) {
         this.properties = properties;
-        isFinish = false;
+        StoreConfig.STORE_PATH = properties.getString("STORE_PATH");
+        System.out.println("store path" + properties.getString("STORE_PATH"));
+        distributor = YmMessageDistributor.getInstance();
     }
 
 
@@ -35,16 +39,19 @@ public class YmPullConsumer implements PullConsumer{
 
     @Override public Message poll() {
         if (isFinish) return null;
-        // 非阻塞？
-        while (true) {
-            if (isListConsumeOver()) {
-                if (msgQueue.size() > 0) {
-                    msgList = msgQueue.poll();
-                    offset = 0;
-                }
-            } else {
-                return msgList.get(offset);
-            }
+        else if (msgList == null) {
+            distributor.query(this);
+            return this.poll();
+        }
+        else if (isListConsumeOver()) {
+            System.out.println("consume over");
+            msgList = null;
+            initOffset();
+            distributor.consumeOver(this);
+            distributor.query(this);
+            return this.poll();
+        } else {
+            return msgList.get(offset++);
         }
     }
 
@@ -67,16 +74,45 @@ public class YmPullConsumer implements PullConsumer{
         }
         queue = queueName;
         this.topics.addAll(topics);
-        messageStore.attachQueue(queue, this.topics);
+        distributor.submitConsumer(this, queueName, topics);
+
     }
 
     public boolean isListConsumeOver() {
-        return offset >= msgList.size();
+        if (offset >= msgList.size()) {
+            System.out.println("offset >= list size");
+            return true;
+        } else {
+            return false;
+        }
     }
-
 
     public void setFinish(boolean isFinish) {
         this.isFinish = isFinish;
     }
 
+    public void initOffset() {
+        System.out.println("init offset");
+        offset = 0;
+    }
+
+    public void setMsgList(List<DefaultBytesMessage> msgList, String topicOrQueue) {
+        this.msgList = msgList;
+        this.currentTopicOrQueue = topicOrQueue;
+    }
+
+    public List<DefaultBytesMessage> getMsgList() {
+        return msgList;
+    }
+
+    public String getCurrentTopicOrQueue() {
+        return currentTopicOrQueue;
+    }
+
+    public boolean isEmpty() {
+        if (msgList == null) {
+            System.out.println(Thread.currentThread().getName() + "msg list is null");
+        }
+        return msgList == null;
+    }
 }

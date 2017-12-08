@@ -89,7 +89,6 @@ public class YmChunkParser2 {
         if (signature == SerialConfig.SIGNATURE_HEADER) {
             readHeaderKeyValue(msg);
         } else if (signature == SerialConfig.SIGNATURE_PROPERTY) {
-            // to do ...
             readPropertyKeyValue(msg);
         } else if (signature == SerialConfig.SIGNATURE_BODY) {
             readBody(msg);
@@ -145,16 +144,6 @@ public class YmChunkParser2 {
         return readLength();
     }
 
-    private long readLong() {
-        // to do
-        return 1;
-    }
-
-    private double readDouble() {
-        // to do ...
-        return 1.0;
-    }
-
     private byte[] getStringBytes(int stringLength) {
         byte[] r = new byte[stringLength];
         for (int i = currentOffset; i < currentOffset + stringLength; i++) {
@@ -164,36 +153,45 @@ public class YmChunkParser2 {
         return r;
     }
 
-    private String readStringWithHead() throws Exception {
-        if (readSignature() == SerialConfig.SIGNATURE_STRING) {
-            int length = readLength();
-            return new String(getStringBytes(length));
-        } else {
-            throw new Exception("bad string signature, current offset " + currentOffset);
-
-        }
-    }
-
-    private int readIntWithHead() throws Exception {
-        if (readSignature() == SerialConfig.SIGNATURE_INT) {
-            return readInt();
-        } else {
-            throw new Exception("bad int signature, current offset " + currentOffset);
-        }
-    }
-
-    private long readLongWithHead() throws Exception {
-        // to do ...
-        return 1;
-    }
-
-    private double readDoubleWithHead() throws Exception {
-        // to do ...
-        return 1.0;
-    }
-
     private String readString() {
         return new String(getStringBytes(readLength()));
     }
+
+    private double readDoubleLength(){
+        long accum = 0;
+        accum = metaData[currentOffset] & 0xFF;
+        accum |= (long) (metaData[currentOffset + 1] & 0xFF) << 8;
+        accum |= (long) (metaData[currentOffset + 2] & 0xFF) << 16;
+        accum |= (long) (metaData[currentOffset + 3] & 0xFF) << 24;
+        accum |= (long) (metaData[currentOffset + 4] & 0xFF) << 32;
+        accum |= (long) (metaData[currentOffset + 5] & 0xFF) << 40;
+        accum |= (long) (metaData[currentOffset + 6] & 0xFF) << 48;
+        accum |= (long) (metaData[currentOffset + 7] & 0xFF) << 56;
+        currentOffset += 8;
+        return Double.longBitsToDouble(accum);
+    }
+
+    public long readLongLength(){
+        long accum = 0;
+        accum = metaData[currentOffset] & 0xFF;
+        accum |= (long) (metaData[currentOffset + 1] & 0xFF) << 8;
+        accum |= (long) (metaData[currentOffset + 2] & 0xFF) << 16;
+        accum |= (long) (metaData[currentOffset + 3] & 0xFF) << 24;
+        accum |= (long) (metaData[currentOffset + 4] & 0xFF) << 32;
+        accum |= (long) (metaData[currentOffset + 5] & 0xFF) << 40;
+        accum |= (long) (metaData[currentOffset + 6] & 0xFF) << 48;
+        accum |= (long) (metaData[currentOffset + 7] & 0xFF) << 56;
+        currentOffset += 8;
+        return accum;
+    }
+
+    private long readLong() {
+        return readLongLength();
+    }
+
+    private double readDouble() {
+        return readDoubleLength();
+    }
+
 
 }

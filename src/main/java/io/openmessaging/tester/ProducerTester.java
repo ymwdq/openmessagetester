@@ -34,7 +34,7 @@ public class ProducerTester {
                 Class kvClass = Class.forName("io.openmessaging.demo.DefaultKeyValue");
                 KeyValue keyValue = (KeyValue) kvClass.newInstance();
                 keyValue.put("STORE_PATH", Constants.STORE_PATH);
-                Class producerClass = Class.forName("io.openmessaging.demo.DefaultProducer");
+                Class producerClass = Class.forName("io.openmessaging.demo.YmProducer6");
                 producer = (Producer) producerClass.getConstructor(new Class[]{KeyValue.class}).newInstance(new Object[]{keyValue});
                 if (producer == null) {
                     throw new InstantiationException("Init Producer Failed");
@@ -47,7 +47,6 @@ public class ProducerTester {
                 offsets.put("TOPIC_" + i, 0);
                 offsets.put("QUEUE_" + i, 0);
             }
-
         }
 
         @Override

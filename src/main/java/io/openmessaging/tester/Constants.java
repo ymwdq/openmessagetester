@@ -2,7 +2,7 @@ package io.openmessaging.tester;
 
 public class Constants {
 
-    public final static String STORE_PATH = System.getProperty("store.path", "/tmp");
+    public final static String STORE_PATH = System.getProperty("store.path", "d://");
 //    public final static int PRO_NUM = Integer.valueOf(System.getProperty("pro.num", "10"));
     public final static int PRO_NUM = Integer.valueOf(System.getProperty("pro.num", "10"));
     public final static int CON_NUM = Integer.valueOf(System.getProperty("con.num", "10"));

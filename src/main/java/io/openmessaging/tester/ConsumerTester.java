@@ -44,7 +44,7 @@ public class ConsumerTester {
                 Class kvClass = Class.forName("io.openmessaging.demo.DefaultKeyValue");
                 KeyValue keyValue = (KeyValue) kvClass.newInstance();
                 keyValue.put("STORE_PATH", Constants.STORE_PATH);
-                Class consumerClass = Class.forName("io.openmessaging.demo.DefaultPullConsumer");
+                Class consumerClass = Class.forName("io.openmessaging.demo.YmConsume.YmPullConsumer");
                 consumer = (PullConsumer) consumerClass.getConstructor(new Class[]{KeyValue.class}).newInstance(new Object[]{keyValue});
                 if (consumer == null) {
                     throw new InstantiationException("Init Producer Failed");
@@ -87,6 +87,7 @@ public class ConsumerTester {
                     String producer = body.substring(0, index);
                     int offset = Integer.parseInt(body.substring(index + 1));
                     if (offset != offsets.get(queueOrTopic).get(producer)) {
+                        System.out.println(message);
                         logger.error("Offset not equal expected:{} actual:{} producer:{} queueOrTopic:{}",
                             offsets.get(producer), offset, producer, queueOrTopic);
                         break;

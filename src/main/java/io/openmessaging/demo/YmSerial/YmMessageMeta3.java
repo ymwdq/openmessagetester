@@ -35,7 +35,6 @@ public class YmMessageMeta3 implements BytesMessage{
             r[i] = metaData[i];
         }
         return r;
-
     }
 
     public void refreshLengthByte() {
@@ -149,11 +148,28 @@ public class YmMessageMeta3 implements BytesMessage{
     }
 
     @Override public Message putHeaders(String key, long value) {
-        return null;
+        copyHeaderSignature(SerialConfig.SIGNATURE_HEADER);
+        copyHeaderSignature(SerialConfig.SIGNATURE_STRING);
+        copyLengthBytes(key.length());
+        copyString(key, this.metaData, currentOffset);
+        copyHeaderSignature(SerialConfig.SIGNATURE_LONG);
+        copyLong(value);
+
+        defaultBytesMessage.putHeaders(key, value);
+        return this;
     }
 
     @Override public Message putHeaders(String key, double value) {
-        return null;
+        copyHeaderSignature(SerialConfig.SIGNATURE_HEADER);
+        copyHeaderSignature(SerialConfig.SIGNATURE_STRING);
+        copyLengthBytes(key.length());
+        copyString(key, this.metaData, currentOffset);
+        copyHeaderSignature(SerialConfig.SIGNATURE_DOUBLE);
+        copyDouble(value);
+
+        defaultBytesMessage.putHeaders(key, value);
+        return this;
+
     }
 
     @Override public Message putHeaders(String key, String value) {
@@ -187,12 +203,34 @@ public class YmMessageMeta3 implements BytesMessage{
     }
 
     @Override public Message putProperties(String key, long value) {
+        copyHeaderSignature(SerialConfig.SIGNATURE_PROPERTY);
 
-        return null;
+        copyHeaderSignature(SerialConfig.SIGNATURE_STRING);
+        copyLengthBytes(key.length());
+        copyString(key, this.metaData, currentOffset);
+
+        copyHeaderSignature(SerialConfig.SIGNATURE_LONG);
+        copyLong(value);
+
+        defaultBytesMessage.putProperties(key, value);
+
+        return this;
     }
 
     @Override public Message putProperties(String key, double value) {
-        return null;
+        copyHeaderSignature(SerialConfig.SIGNATURE_PROPERTY);
+
+        copyHeaderSignature(SerialConfig.SIGNATURE_STRING);
+        copyLengthBytes(key.length());
+        copyString(key, this.metaData, currentOffset);
+
+        copyHeaderSignature(SerialConfig.SIGNATURE_DOUBLE);
+        copyDouble(value);
+
+        defaultBytesMessage.putProperties(key, value);
+
+        return this;
+
     }
 
     @Override public Message putProperties(String key, String value) {
@@ -209,6 +247,54 @@ public class YmMessageMeta3 implements BytesMessage{
         defaultBytesMessage.putProperties(key, value);
 
         return this;
+    }
+
+    public void copyLong(Long i){
+        longToByte(i, metaData, currentOffset);
+        currentOffset += 8;
+    }
+
+    public byte[] longToByte(long i, byte[] target, int offset){
+        target[offset + 7] = (byte) (i & 0xFF);
+        target[offset + 6] = (byte) (i >> 8 & 0xFF);
+        target[offset + 5] = (byte) (i >> 16 & 0xFF);
+        target[offset + 4] = (byte) (i >> 24 & 0xFF);
+        target[offset + 3] = (byte) (i >> 32 & 0xFF);
+        target[offset + 2] = (byte) (i >> 40 & 0xFF);
+        target[offset + 1] = (byte) (i >> 48 & 0xFF);
+        target[offset] = (byte) (i >> 56 & 0xFF);
+        return target;
+
+    }
+
+    public void copyDouble(double i){
+        doubleToByte(i, metaData, currentOffset);
+        currentOffset += 8;
+    }
+
+    public byte[] doubleToByte(double i, byte[] target, int offset){
+        long l = Double.doubleToRawLongBits(i);
+        target[offset + 7] = (byte) (l & 0xFF);
+        target[offset + 6] = (byte) (l >> 8 & 0xFF);
+        target[offset + 5] = (byte) (l >> 16 & 0xFF);
+        target[offset + 4] = (byte) (l >> 24 & 0xFF);
+        target[offset + 3] = (byte) (l >> 32 & 0xFF);
+        target[offset + 2] = (byte) (l >> 40 & 0xFF);
+        target[offset + 1] = (byte) (l >> 48 & 0xFF);
+        target[offset] = (byte) (l >> 56 & 0xFF);
+        return target;
+    }
+
+    public static void main(String[] args) {
+        YmMessageMeta3 msg = new YmMessageMeta3(new byte[128]);
+        msg.putHeaders("int", 3);
+        msg.putHeaders("long", 3l);
+        msg.putHeaders("string", "queue");
+        msg.putHeaders("double", 3d);
+        msg.refreshBodyByte();
+        msg.refreshLengthByte();
+        System.out.println(msg.getRealMetaData());
+        System.out.println(msg);
     }
 
 }
